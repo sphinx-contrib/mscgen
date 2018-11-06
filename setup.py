@@ -23,7 +23,7 @@ Sphinx-generated documents inline. For example::
 
 '''
 
-requires = ['Sphinx>=0.6']
+requires = ['Sphinx>=0.6', 'six>=1.5']
 
 setup(
     name='sphinxcontrib-mscgen',
