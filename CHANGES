@@ -2,6 +2,11 @@
 
 This file describes user-visible changes between the extension versions.
 
+Version 0.5. (2018-11-07)
+-------------------------
+
+* Make the code Python 2 and 3 compatible
+
 Version 0.4 (2009-11-21)
 ------------------------
 
