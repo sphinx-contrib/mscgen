@@ -12,6 +12,7 @@
     :license: BOLA, see LICENSE for details.
 """
 
+import errno
 import sys
 import posixpath
 from os import path
