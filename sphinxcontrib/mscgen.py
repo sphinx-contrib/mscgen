@@ -13,7 +13,6 @@
 """
 
 import errno
-import sys
 import posixpath
 from os import path
 from subprocess import Popen, PIPE
@@ -25,8 +24,10 @@ except ImportError:
 from docutils import nodes
 
 from sphinx.errors import SphinxError
-from sphinx.util import ensuredir
+from sphinx.util import ensuredir, logging
 from docutils.parsers.rst import Directive
+
+logger = logging.getLogger(__name__)
 
 
 class MscgenError(SphinxError):
@@ -81,15 +82,15 @@ def run_cmd(builder, cmd, cmd_name, cfg_name, stdin=''):
     except OSError as err:
         if err.errno != 2:   # No such file or directory
             raise
-        builder.warn('%s command %r cannot be run (needed for mscgen '
-                          'output), check the %s setting' %
-                          (cmd_name, builder.config.mscgen, cfg_name))
+        logger.warn('%s command %r cannot be run (needed for mscgen '
+                    'output), check the %s setting',
+                    cmd_name, builder.config.mscgen, cfg_name)
         builder._mscgen_warned = True
         return False
     stdout, stderr = p.communicate(stdin)
     if p.returncode != 0:
         raise MscgenError('%s exited with error:\n[stderr]\n%s\n'
-                            '[stdout]\n%s' % (cmd_name, stderr, stdout))
+                          '[stdout]\n%s' % (cmd_name, stderr, stdout))
     return True
 
 
@@ -157,7 +158,7 @@ def render_msc(self, code, format, prefix='mscgen'):
         mscgen_args = mscgen_args[:-4] + ['-T', 'ismap', '-o', mapfn]
         if not run_cmd(self.builder, mscgen_args, 'mscgen', 'mscgen', code):
             return None, None, None
-    else: # PDF/EPS
+    else:  # PDF/EPS
         if not eps_to_pdf(self.builder, tmpfn, outfn):
             return None, None, None
 
@@ -168,7 +169,7 @@ def render_msc_html(self, node, code, prefix='mscgen', imgcls=None):
     try:
         fname, outfn, id = render_msc(self, code, 'png', prefix)
     except MscgenError as exc:
-        self.builder.warn('mscgen code %r: ' % code + str(exc))
+        logger.warn('mscgen code %r: %r', code, str(exc))
         raise nodes.SkipNode
 
     self.body.append(self.starttag(node, 'p', CLASS='mscgen'))
@@ -198,7 +199,7 @@ def render_msc_latex(self, node, code, prefix='mscgen'):
     try:
         fname, outfn, id = render_msc(self, code, 'pdf', prefix)
     except MscgenError as exc:
-        self.builder.warn('mscgen code %r: ' % code + str(exc))
+        logger.warn('mscgen code %r: %r', code, str(exc))
         raise nodes.SkipNode
 
     if fname is not None:
