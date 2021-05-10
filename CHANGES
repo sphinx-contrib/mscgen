@@ -2,6 +2,13 @@
 
 This file describes user-visible changes between the extension versions.
 
+Version 0.6 (2021-05-10)
+------------------------
+
+* Fixed use of deprecated Spinx logging mechanism.
+* Marked the extension as pararell-safe.
+
+
 Version 0.5 (2019-03-28)
 ------------------------
 
