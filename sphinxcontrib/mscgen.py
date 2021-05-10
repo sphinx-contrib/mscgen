@@ -220,3 +220,7 @@ def setup(app):
     app.add_config_value('mscgen_epstopdf', 'epstopdf', 'html')
     app.add_config_value('mscgen_epstopdf_args', [], 'html')
 
+    return {
+        'parallel_read_safe': True,
+        'parallel_write_safe': True,
+    }
