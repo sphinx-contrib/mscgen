@@ -123,18 +123,13 @@ def render_msc(self, code, format, prefix='mscgen'):
     hashkey = (code + str(self.builder.config.mscgen_args)).encode('utf-8')
     id = sha(hashkey).hexdigest()
     fname = '%s-%s.%s' % (prefix, id, format)
-    if hasattr(self.builder, 'imgpath'):
-        # HTML
-        relfn = posixpath.join(self.builder.imgpath, fname)
-        outfn = path.join(self.builder.outdir, '_images', fname)
-        tmpfn = outfn
-        mapfn = outfn + '.map'
-    else:
-        # LaTeX
-        relfn = fname
-        outfn = path.join(self.builder.outdir, fname)
+    relfn = posixpath.join(self.builder.imgpath, fname)
+    outfn = path.join(self.builder.outdir, relfn)
+    tmpfn = outfn
+
+    if format == 'pdf':
+        tmpfn = outfn[:-3] + '.eps'
         format = 'eps'
-        tmpfn = outfn[:-3] + format
 
     if path.isfile(outfn):
         return relfn, outfn, id
@@ -155,7 +150,7 @@ def render_msc(self, code, format, prefix='mscgen'):
         return None, None, None
 
     if format == 'png':
-        mscgen_args = mscgen_args[:-4] + ['-T', 'ismap', '-o', mapfn]
+        mscgen_args = mscgen_args[:-4] + ['-T', 'ismap', '-o', outfn + '.map']
         if not run_cmd(self.builder, mscgen_args, 'mscgen', 'mscgen', code):
             return None, None, None
     else:  # PDF/EPS
